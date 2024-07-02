@@ -70,35 +70,5 @@
         "title": "Go to the dentist",
         "description": "Visit the dentist for a routine check-up",
         "due_date": "2024-10-21"
-    },
-    {
-        "id": 13,
-        "title": "New Task",
-        "description": "desc",
-        "due_date": "2024-07-26"
-    },
-    {
-        "id": 14,
-        "title": "another task",
-        "description": "lalala",
-        "due_date": "2024-08-03"
-    },
-    {
-        "id": 15,
-        "title": "testing refresh",
-        "description": "",
-        "due_date": "2024-07-20"
-    },
-    {
-        "id": 16,
-        "title": "preventdefault",
-        "description": "",
-        "due_date": "2024-08-03"
-    },
-    {
-        "id": 17,
-        "title": "test",
-        "description": "dsfsdf",
-        "due_date": "2024-07-17"
     }
 ]

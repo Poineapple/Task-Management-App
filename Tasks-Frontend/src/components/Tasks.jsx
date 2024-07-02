@@ -16,7 +16,7 @@ function Tasks() {
         setTasks(data); // Assuming the API returns an array of tasks
       })
       .catch((error) => console.error("Error fetching tasks:", error));
-  }, []); // The empty array ensures this effect runs only once after initial render
+  }, [isPopupVisible]); // The empty array ensures this effect runs only once after initial render
 
   const [lastId, setLastId] = useState(0);
   useEffect(() => {
@@ -24,8 +24,6 @@ function Tasks() {
       setLastId(tasks.length);
     }
   }, [tasks]);
-
-  console.log('last '+ lastId);
 
   return (
     <div className="bg-slate-500 p-4">

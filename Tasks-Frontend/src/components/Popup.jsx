@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from "react";
 //Reusable popup element used to display task details or add a new task
 function Popup({ task, onClose, lastId }) {
   const popupRef = useRef();
+  const [showEditPopup, setShowEditPopup] = useState(false);
 
   // Add event listener to close the popup when clicking outside of it
   useEffect(() => {
@@ -36,9 +37,17 @@ function Popup({ task, onClose, lastId }) {
         >
           {/* Check if it's 'detailed view' (description) popup or 'add task' popup */}
           {task !== "Add" ? (
-            <Description {...task} />
+            <Description
+              task={task}
+              close={onClose}
+              lastId={lastId}
+              showEditPopup={showEditPopup}
+              setShowEditPopup={setShowEditPopup}
+            />
           ) : (
-            <AddTask close={onClose} lastId={lastId} />
+            <AddTask 
+            close={onClose} 
+            lastId={lastId} />
           )}
         </div>
       </div>
@@ -51,18 +60,96 @@ function Popup({ task, onClose, lastId }) {
 
 
 // Description component to display task details
-function Description(task) {
+function Description({task, lastId, close, showEditPopup, setShowEditPopup}) {
+
+  const deleteTask = async () => {
+    try {
+      const response = await fetch(`http://192.168.0.104:5000/tasks/${task.id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete the task");
+      }
+      // Handle successful deletion here, e.g., redirect or update UI
+      console.log("Task deleted successfully");
+      close();
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
+  const editTask = async (event) => {
+    // Implement edit task functionality here
+    setShowEditPopup(true);
+
+    event.preventDefault();
+    // Get the values from the form inputs
+    try {
+      const response = await fetch(
+        `http://192.168.0.104:5000/tasks/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: event.target.title.value,
+            description: event.target.description.value,
+            due_date: event.target.due_date.value,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update the task");
+      }
+
+      const data = await response.json();
+      console.log("Task updated successfully:", data);
+      close();
+
+      // Optionally, update the UI or state here to reflect the changes
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
   return (
-    <div className=" h-full">
-      <p className="font-bold text-4xl m-2 md:m-4">{task.title}</p>
-      <p className="text-base m-2 md:m-4">
-        <b>Due by: </b>
-        {task.due_date}
-      </p>
-      <p className="font-bold text-xl m-2 md:m-4">Description:</p>
-      <p className="h-2/3 overflow-y-auto text-base m-2 md:m-4 ">
-        {task.description}
-      </p>
+    <div className=" h-full flex flex-col">
+      {!showEditPopup ? (
+        <div>
+          <p className="font-bold text-4xl m-2 md:m-4">{task.title}</p>
+          <p className="text-base m-2 md:m-4">
+            <b>Due by: </b>
+            {task.due_date}
+          </p>
+          <p className="font-bold text-xl m-2 md:m-4">Description:</p>
+          <p className="h-full overflow-y-auto text-base m-2 md:m-4 ">
+            {task.description}
+          </p>
+
+          <div className="flex justify-center gap-8">
+            <button
+              className="w-[6rem] hover:bg-slate-200 hover:text-slate-800 px-4 py-2 
+        rounded-lg bg-slate-800 text-slate-100"
+              onClick={editTask}
+            >
+              Edit
+            </button>
+
+            <button
+              className="w-[6rem] bg-slate-200 text-slate-800 px-4 py-2 
+        rounded-lg hover:bg-slate-800 hover:text-slate-100"
+              onClick={deleteTask}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ) : (
+        <Form handleSubmit={editTask} close={close} title={task.title} 
+        description={task.description} due_date={task.due_date}/>
+      )}
     </div>
   );
 }
@@ -74,10 +161,8 @@ function Description(task) {
 // AddTask component to add a new task
 function AddTask({ close, lastId }) {
 
-  const [addTask, setAddTask] = useState([]);
-
   const handleSubmit = (event) => {
-
+    event.preventDefault(); 
     // Get the values from the form inputs
     const id = lastId + 1;
     const title = event.target.title.value;
@@ -107,14 +192,23 @@ function AddTask({ close, lastId }) {
       })
       .then((data) => {
         console.log("Success:", data);
+        close();
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+
   };
+
 
   return (
     // Add Task form
+    <Form handleSubmit={handleSubmit} close={close}/>
+  );
+}
+
+function Form({handleSubmit, close, title, description, due_date}){
+  return (
     <form
       onSubmit={handleSubmit}
       className="flex flex-col justify-evenly gap-2 h-full"
@@ -124,6 +218,7 @@ function AddTask({ close, lastId }) {
       <input
         type="text"
         name="title"
+        defaultValue={title}
         required
         placeholder="Title"
         className="m-4 p-1 border-2 border-slate-400"
@@ -131,6 +226,7 @@ function AddTask({ close, lastId }) {
 
       <textarea
         name="description"
+        defaultValue={description}
         placeholder="Description (optional)"
         className="m-4 p-2 border-2 border-slate-400"
       />
@@ -139,6 +235,7 @@ function AddTask({ close, lastId }) {
         <label className="my-4"> Due Date: </label>
         <input
           type="date"
+          defaultValue={due_date}
           name="due_date"
           required
           className=" p-2 border-2 border-slate-400"
@@ -165,5 +262,6 @@ function AddTask({ close, lastId }) {
     </form>
   );
 }
+
 
 export default Popup;
