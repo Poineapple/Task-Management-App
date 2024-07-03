@@ -1,4 +1,127 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+:root {
+    --grad: linear-gradient(-45deg,
+     #1662f1,
+     #55e0ff,
+     #8b4cdd,
+     #e63832,
+     #ff5618,
+     #f51962,
+     #f519d0,
+     #af19f5
+     );
+}
+
+ /* background gradient animation for reuse */
+.bg-grad-anim{
+    background-image: var(--grad);
+    background-size: 400%;
+    animation: bg-anim 8s infinite alternate;
+}
+
+/* keyframes for animation */
+@keyframes bg-anim{
+    0%{
+        background-position: 0%;
+    }
+    100%{
+        background-position: 100%;
+    }
+}
+
+/* styling for the heading */
+.heading {
+    font-family: "Kanit", sans-serif;
+    font-weight: 700;
+    font-style: italic;
+    background-image: var(--grad);
+    background-size: 300%;
+    background-clip: text;
+    color: rgba(255, 255, 255, 0.5);
+    animation: bg-anim 8s infinite alternate;
+}
+
+ /* media query to scale the button on larger screens */
+@media (min-width: 768px) {
+    .btn-style {
+        scale: 1.5;
+    }
+}
+
+.btn-style{
+    background-color: rgb(255, 255, 255);
+        text-shadow: 0 0 0.5em currentColor;
+}
+
+/* hover animation effect to give 3D feel */
+.btn {
+    transform-style: preserve-3d;
+    position:relative;
+    transform: perspective(5000px) rotateY(var(--rotateX)) rotateX(var(--rotateY));
+}
+
+.btn::before,
+.btn::after {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+}
+
+/* applying background shadow */
+.btn::before {
+        inset: -1px;
+        border-radius: inherit;
+        background: black;
+        z-index: -1;
+        transform: translateZ(-10px);
+         filter: blur(4px); 
+        opacity: 1;
+}
+
+/* applying gradient animation */
+.btn::after{
+    z-index: -2;
+    inset:-3px;
+    background: var(--grad);
+    background-size: 300%;
+    animation: bg-anim 8s infinite alternate;
+    transform: translateZ(-10px);
+}
+
+.card{
+    position: relative;
+}
+
+.card::before{
+    content: "";
+    position: absolute;
+    inset: -25px;
+    transform: translateZ(-10px);
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--grad);
+    background-size: 300%;
+    animation: bg-anim 8s infinite alternate;
+}
+
+/* thinner scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* color of the tracking area */
+::-webkit-scrollbar-track {
+    background: #07012a;
+}
+
+/* style of the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    background-color: rgb(147, 147, 153);
+    border-radius: 20px;
+    border: 3px solid black;
+}

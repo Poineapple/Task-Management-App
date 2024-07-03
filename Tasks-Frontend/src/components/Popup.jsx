@@ -35,7 +35,7 @@ function Popup({ task, onClose, lastId }) {
           className="bg-white p-4 rounded-lg md:w-1/2 w-10/12 md:h-2/3 h-[60vh]"
           ref={task !== "Add" ? popupRef : null} // Set ref only if it's not an add task popup to prevent unintentional clicks closing the popup
         >
-          {/* Check if it's 'detailed view' (description) popup or 'add task' popup */}
+          {/* Ternary operator to check if it's 'detailed view' (description) popup or 'add task' popup */}
           {task !== "Add" ? (
             <Description
               task={task}
@@ -62,8 +62,10 @@ function Popup({ task, onClose, lastId }) {
 // Description component to display task details
 function Description({task, lastId, close, showEditPopup, setShowEditPopup}) {
 
+  // Function to delete a task
   const deleteTask = async () => {
     try {
+      // Send a DELETE request to the server
       const response = await fetch(`http://192.168.0.104:5000/tasks/${task.id}`, {
         method: "DELETE",
       });
@@ -78,20 +80,22 @@ function Description({task, lastId, close, showEditPopup, setShowEditPopup}) {
     }
   };
 
+  // Function to edit a task
   const editTask = async (event) => {
-    // Implement edit task functionality here
     setShowEditPopup(true);
 
     event.preventDefault();
-    // Get the values from the form inputs
+
     try {
       const response = await fetch(
+        // Send a PUT request to update the task
         `http://192.168.0.104:5000/tasks/${task.id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
+          // Get the values from the form inputs
           body: JSON.stringify({
             title: event.target.title.value,
             description: event.target.description.value,
@@ -108,23 +112,27 @@ function Description({task, lastId, close, showEditPopup, setShowEditPopup}) {
       console.log("Task updated successfully:", data);
       close();
 
-      // Optionally, update the UI or state here to reflect the changes
     } catch (error) {
       console.error("Error updating task:", error);
     }
   };
 
+  
   return (
-    <div className=" h-full flex flex-col">
+    // Detailed view of the task that allows editing and deleting
+    <div className=" h-full flex flex-col card">
+      {/* ternary operator to check whether to show the description popup or
+      editing popup */}
       {!showEditPopup ? (
-        <div>
-          <p className="font-bold text-4xl m-2 md:m-4">{task.title}</p>
+        <div className="flex flex-col justify-between h-full">
+          <p className="font-bold text-4xl m-2 md:m-4 title min-h-[5rem] overflow-x-auto">
+            {task.title}</p>
           <p className="text-base m-2 md:m-4">
             <b>Due by: </b>
             {task.due_date}
           </p>
           <p className="font-bold text-xl m-2 md:m-4">Description:</p>
-          <p className="h-full overflow-y-auto text-base m-2 md:m-4 ">
+          <p className="h-[80%] overflow-y-auto text-base m-2 md:m-4 ">
             {task.description}
           </p>
 
@@ -140,23 +148,30 @@ function Description({task, lastId, close, showEditPopup, setShowEditPopup}) {
             <button
               className="w-[6rem] bg-slate-200 text-slate-800 px-4 py-2 
         rounded-lg hover:bg-slate-800 hover:text-slate-100"
-              onClick={deleteTask}
+              onClick={() => {
+                if (
+                  window.confirm("Are you sure you want to delete this task?")
+                ) {
+                  deleteTask();
+                }
+              }}
             >
               Delete
             </button>
           </div>
         </div>
       ) : (
-        <Form handleSubmit={editTask} close={close} title={task.title} 
-        description={task.description} due_date={task.due_date}/>
+        <Form
+          handleSubmit={editTask}
+          close={close}
+          title={task.title}
+          description={task.description}
+          due_date={task.due_date}
+        />
       )}
     </div>
   );
 }
-
-
-
-
 
 // AddTask component to add a new task
 function AddTask({ close, lastId }) {
@@ -207,6 +222,8 @@ function AddTask({ close, lastId }) {
   );
 }
 
+
+// Form component to display the form for adding a new task or editing an existing task
 function Form({handleSubmit, close, title, description, due_date}){
   return (
     <form
@@ -218,16 +235,18 @@ function Form({handleSubmit, close, title, description, due_date}){
       <input
         type="text"
         name="title"
+        maxLength={100}
         defaultValue={title}
         required
-        placeholder="Title"
+        placeholder="Title (max 100 characters)"
         className="m-4 p-1 border-2 border-slate-400"
       />
 
       <textarea
         name="description"
+        maxLength={255}
         defaultValue={description}
-        placeholder="Description (optional)"
+        placeholder="Description (optional, max 255 characters)"
         className="m-4 p-2 border-2 border-slate-400"
       />
 
