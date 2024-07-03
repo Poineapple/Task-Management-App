@@ -63,4 +63,4 @@ def delete_task(task_id):
     return jsonify({'message': 'Task deleted'})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='192.168.0.104')
+    app.run(debug=True)

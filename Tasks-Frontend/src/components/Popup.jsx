@@ -66,7 +66,7 @@ function Description({task, lastId, close, showEditPopup, setShowEditPopup}) {
   const deleteTask = async () => {
     try {
       // Send a DELETE request to the server
-      const response = await fetch(`http://192.168.0.104:5000/tasks/${task.id}`, {
+      const response = await fetch(`http://localhost:5000/tasks/${task.id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
@@ -89,7 +89,7 @@ function Description({task, lastId, close, showEditPopup, setShowEditPopup}) {
     try {
       const response = await fetch(
         // Send a PUT request to update the task
-        `http://192.168.0.104:5000/tasks/${task.id}`,
+        `http://localhost:5000/tasks/${task.id}`,
         {
           method: "PUT",
           headers: {
@@ -192,7 +192,7 @@ function AddTask({ close, lastId }) {
     };
 
     // Send the data to the server using HTTP POST method
-    fetch("http://192.168.0.104:5000/tasks", {
+    fetch("http://localhost:5000/tasks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

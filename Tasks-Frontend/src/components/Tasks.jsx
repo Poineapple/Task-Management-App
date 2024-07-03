@@ -37,7 +37,7 @@ function Tasks() {
   };
 
   useEffect(() => {
-    fetch("http://192.168.0.104:5000/tasks")
+    fetch("http://localhost:5000/tasks")
       .then((response) => response.json())
       .then((data) => {
         setTasks(data); // Set the tasks state with the data fetched from the server
